@@ -22,6 +22,10 @@ target_include_directories(${PROJECT_NAME} PUBLIC include)
 # OpenCV
 find_package(OpenCV 2.4.7 EXACT REQUIRED)
 include_directories( ${OpenCV_INCLUDE_DIRS} )
-target_link_libraries( RepeatedLineTracking ${OpenCV_LIBS} )
+target_link_libraries( ${PROJECT_NAME} ${OpenCV_LIBS} )
 
 add_subdirectory(examples)
+
+install (TARGETS ${PROJECT_NAME} DESTINATION bin)
+install (FILES ${RepeatedLineTracking.Headers} DESTINATION include)
+    
