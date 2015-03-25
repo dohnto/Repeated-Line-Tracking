@@ -134,8 +134,6 @@ void RepeatedLineTracking(cv::InputArray _src, cv::OutputArray _dst, cv::InputAr
 		while (Vl > 0) {
 			// Determine the moving candidate point set Nc
 			cv::Mat Nr = cv::Mat::zeros(cv::Size(3, 3), CV_8U);
-			std::cout << "xc = " << xc << std::endl;
-			std::cout << "yc = " << yc << std::endl;
 
 			double random = rng.uniform(0, 101) / 100.0;
 			random = 0.8;
@@ -170,12 +168,6 @@ void RepeatedLineTracking(cv::InputArray _src, cv::OutputArray _dst, cv::InputAr
 			}
 
 
-//			std::cout << "Nc = ";
-//			for (auto it = Nc.begin(); it != Nc.end(); it++) {
-//				std::cout << *it << "\t";
-//			}
-//			std::cout << std::endl;
-
 			if (Nc.size() == 0) {
 				Vl = -1;                                              // TODO break?
 				continue;
@@ -208,7 +200,6 @@ void RepeatedLineTracking(cv::InputArray _src, cv::OutputArray _dst, cv::InputAr
 						+ src.at<double>(cv::Point(xp, yp - hW))
 					;
 
-//					std::cout << "ted1 " <<  Vdepths[it] << std::endl;
 				}
 				else if (Ncp.x == xc) {
 					// Vertical plane
@@ -229,7 +220,6 @@ void RepeatedLineTracking(cv::InputArray _src, cv::OutputArray _dst, cv::InputAr
 						- 2 * src.at<double>(cv::Point(xp, yp))
 						+ src.at<double>(cv::Point(xp - hW, yp))
 					;
-//					std::cout << "ted2 " <<  Vdepths[it] << std::endl;
 				}
 
 				// Oblique directions
@@ -253,7 +243,6 @@ void RepeatedLineTracking(cv::InputArray _src, cv::OutputArray _dst, cv::InputAr
 						- 2 * src.at<double>(cv::Point(xp, yp))
 						+ src.at<double>(cv::Point(xp + hWo, yp + hWo))
 					;
-//					std::cout << "ted3 " <<  Vdepths[it] << std::endl;
 				} else {
 					// Diagonal, down \.
 					int xp;
@@ -269,38 +258,26 @@ void RepeatedLineTracking(cv::InputArray _src, cv::OutputArray _dst, cv::InputAr
 						yp = Ncp.y + ro;
 					}
 
-					std::cout << cv::Point(xp + hWo, yp - hWo) << std::endl; std::cout << std::flush;
 					Vdepths[it] =
 						src.at<double>(cv::Point(xp - hWo, yp + hWo))
 						- 2 * src.at<double>(cv::Point(xp, yp))
 						+ src.at<double>(cv::Point(xp + hWo, yp - hWo))
 					;
 
-//					std::cout << "ted4 " <<  Vdepths[it] << std::endl;
 				}
 			} // End search of candidates
 
-//			std::cout << "Vdepths = ";
-//			for (auto it = Vdepths.begin(); it != Vdepths.end(); it++) {
-//				std::cout << *it << "\t";
-//			}
-//			std::cout << "\n";
 
 			Tc.at<uchar>(cv::Point(xc, yc)) = true;
 			Tr.at<uchar>(cv::Point(xc, yc))++;
 
 			int index = std::distance(Vdepths.begin(), std::max_element(Vdepths.begin(), Vdepths.end()));
 
-			std::cout << "index = " << index << std::endl;
 			xc = Nc[index].x;
 			yc = Nc[index].y;
 		}
 	}
-	std::cout << std::endl;
 
-	for (auto it = indices.begin(); it != indices.end(); it++) {
-		std::cout << *it << "\t";
-	}
 
 	std::vector<unsigned> nonZeroValues;
 	for (int i = 0; i < Tr.size().width; i++) {
@@ -322,11 +299,7 @@ void RepeatedLineTracking(cv::InputArray _src, cv::OutputArray _dst, cv::InputAr
 			}
 		}
 	}
-	std::cout << Tr << std::endl;
 
-//	cv::imshow("src", _src);
-//	cv::imshow("mask", _mask);
-//	cv::imshow("tr", Tr);
 	_dst.create(src.rows, src.cols, CV_8U);
 	cv::Mat dst = _dst.getMat();
 	Tr.copyTo(dst);

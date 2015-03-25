@@ -28,4 +28,3 @@ add_subdirectory(examples)
 
 install (TARGETS ${PROJECT_NAME} DESTINATION bin)
 install (FILES ${RepeatedLineTracking.Headers} DESTINATION include)
-    
