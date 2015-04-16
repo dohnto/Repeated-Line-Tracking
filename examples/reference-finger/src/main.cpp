@@ -10,9 +10,9 @@ int main()
 
 	cv::imshow("orig", finger);
 	cv::Mat result, result2;
-	RepeatedLineTracking(finger, result2, mask, 2000, 1, 29);
-	//RepeatedLineTracking(finger, result, mask, 1000, 1, 29);
-	//cv::imshow("pes", result);
+	RepeatedLineTracking(finger, result2, mask, 9000, 1, 19);
+//	cv::imshow("pes", result);
 	cv::imshow("pes2", result2);
+	cv::imwrite("orig2.png", result2);
 	cv::waitKey(0);
 }
