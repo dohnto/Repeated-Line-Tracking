@@ -282,9 +282,6 @@ void RepeatedLineTracking(cv::InputArray _src, cv::OutputArray _dst, cv::InputAr
 			Vl = Vdepths[index];
 		}
 	}
-	cv::imshow("pes", Tr);
-	cv::waitKey();
-
 
 	std::vector<unsigned> nonZeroValues;
 	for (int i = 0; i < Tr.size().width; i++) {
@@ -302,7 +299,7 @@ void RepeatedLineTracking(cv::InputArray _src, cv::OutputArray _dst, cv::InputAr
 
 		for (int j = 0; j < Tr.size().height; j++) {
 			if (Tr.at<uchar>(cv::Point(i, j)) > median) {
-				Tr.at<uchar>(cv::Point(i, j)) = 255;
+				//Tr.at<uchar>(cv::Point(i, j)) = 255;
 			}
 		}
 	}
@@ -310,5 +307,4 @@ void RepeatedLineTracking(cv::InputArray _src, cv::OutputArray _dst, cv::InputAr
 	_dst.create(src.rows, src.cols, CV_8U);
 	cv::Mat dst = _dst.getMat();
 	Tr.copyTo(dst);
-//	cv::waitKey(0);
 }
