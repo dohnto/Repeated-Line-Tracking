@@ -11,8 +11,10 @@ Original code can be found: http://www.mathworks.com/matlabcentral/fileexchange/
 ![original](https://raw.githubusercontent.com/dohnto/Repeated-Line-Tracking/master/doc/finger.png)
 
 * Enhances with CLAHE
+
 ![clahe](https://raw.githubusercontent.com/dohnto/Repeated-Line-Tracking/master/doc/clahe.jpg)
 
 * 200,000 iterations; r = 1; W = 29
-![clahe](https://raw.githubusercontent.com/dohnto/Repeated-Line-Tracking/master/doc/rlt.jpg)
+
+![clahe](https://raw.githubusercontent.com/dohnto/Repeated-Line-Tracking/master/doc/rlt.png)
 
