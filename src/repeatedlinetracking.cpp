@@ -8,8 +8,7 @@
 #include <opencv2/core/operations.hpp>
 #include <algorithm>    // std::random_shuffle
 
-void RepeatedLineTracking(cv::InputArray _src, cv::OutputArray _dst, cv::InputArray _mask, unsigned iterations, unsigned r, unsigned W)
-{
+void RepeatedLineTracking(cv::InputArray _src, cv::OutputArray _dst, cv::InputArray _mask, unsigned iterations, unsigned r, unsigned W) {
 	cv::Mat src = _src.getMat();
 
 	src.convertTo(src, CV_64F, 1.0 / 255.0);
@@ -57,63 +56,31 @@ void RepeatedLineTracking(cv::InputArray _src, cv::OutputArray _dst, cv::InputAr
 		}
 	}
 
-	// Uniformly distributed starting points
-	std::vector<cv::Point> indices;
-	for (int x = 0; x < mask.size().width; x++) {
-		for (int y = 0; y < mask.size().height; y++) {
-			if (mask.at<uchar>(cv::Point(x, y))) {
-				indices.push_back(cv::Point(x, y));
-			}
-		}
-	}
-
-	std::random_shuffle(indices.begin(), indices.end());
-	indices.erase(indices.begin() + iterations, indices.end());
-
-	// TODO DELETE
-//	indices.clear();
-//	indices.push_back(cv::Point(307,   160));
-//	indices.push_back(cv::Point(106,    96));
-//	indices.push_back(cv::Point(219,    75));
-//	indices.push_back(cv::Point(64,    95));
-//	indices.push_back(cv::Point(106,    62));
-//	indices.push_back(cv::Point(179,    64));
-//	indices.push_back(cv::Point(72,    25));
-//	indices.push_back(cv::Point(57,   109));
-//	indices.push_back(cv::Point(329,   129));
-//	indices.push_back(cv::Point(273,    58));
-//	indices.push_back(cv::Point(80,   172));
-//	indices.push_back(cv::Point(296,   143));
-//	indices.push_back(cv::Point(350,   140));
-//	indices.push_back(cv::Point(98,    54));
-//	indices.push_back(cv::Point(186,   115));
-//	indices.push_back(cv::Point(279,    49));
-//	indices.push_back(cv::Point(271,   138));
-//	indices.push_back(cv::Point(241,    72));
-//	indices.push_back(cv::Point(34,   118));
-//	indices.push_back(cv::Point(55,    56));
-//	indices.push_back(cv::Point(365,   148));
-//	indices.push_back(cv::Point(232,   135));
-//	indices.push_back(cv::Point(351,   171));
-//	indices.push_back(cv::Point(38,   149));
-//	indices.push_back(cv::Point(21,   102));
-//	indices.push_back(cv::Point(360,    77));
-//	indices.push_back(cv::Point(292,   104));
-//	indices.push_back(cv::Point(51,    86));
-//	indices.push_back(cv::Point(108,    98));
-//	indices.push_back(cv::Point(105,   156));
 
 	cv::RNG rng;
 
+	// Uniformly distributed starting points
+	std::vector<cv::Point> indices;
+	for (int i = 0; i < iterations;) {
+		int xRandom = rng.uniform(0, mask.cols);
+		int yRandom = rng.uniform(0, mask.rows);
+		cv::Point p(xRandom,yRandom);
+		if (mask.at<uchar>(p)) {
+			indices.push_back(p);
+			i++;
+		}
+	}
+
+
 	// Iterate through all starting points
 	for (std::vector<cv::Point>::iterator startingPoint = indices.begin(); startingPoint != indices.end(); startingPoint++) {
+		std::cout << *startingPoint << std::endl;
 		int xc = startingPoint->x;                                                 //  Current tracking point, x
 		int yc = startingPoint->y;                                                 //  Current tracking point, y
 
 		// Determine the moving-direction attributes
 		// Going left or right ?
 		int Dlr = 1;                                                               // going right
-//		if (1) {                                                                   // returns 0 or 1
 		if (rng.uniform(0, 2)) {                                                           // returns 0 or 1
 			Dlr = -1;                                                              // going left
 		}
@@ -127,9 +94,6 @@ void RepeatedLineTracking(cv::InputArray _src, cv::OutputArray _dst, cv::InputAr
 		// Initialize locus-positition table T
 		cv::Mat Tc = cv::Mat::zeros(src.size(), CV_8U);
 
-		// TODO DELETE
-//		Dud = -1;
-//		Dlr = 1;
 
 		double Vl = 1;
 		while (Vl > 0) {
@@ -137,20 +101,17 @@ void RepeatedLineTracking(cv::InputArray _src, cv::OutputArray _dst, cv::InputAr
 			cv::Mat Nr = cv::Mat::zeros(cv::Size(3, 3), CV_8U);
 
 			double random = rng.uniform(0, 101) / 100.0;
-//			random = 0.8;
 			if (random < p_lr) {
 				// Going left or right
 				Nr.at<uchar>(cv::Point(1 + Dlr, 0)) = 1;
 				Nr.at<uchar>(cv::Point(1 + Dlr, 1)) = 1;
 				Nr.at<uchar>(cv::Point(1 + Dlr, 2)) = 1;
-			}
-			else if (random > p_lr && random < (p_lr + p_ud)) {
+			} else if (random > p_lr && random < (p_lr + p_ud)) {
 				// Going up or down
 				Nr.at<uchar>(cv::Point(0, 1 + Dud)) = 1;
 				Nr.at<uchar>(cv::Point(1, 1 + Dud)) = 1;
 				Nr.at<uchar>(cv::Point(2, 1 + Dud)) = 1;
-			}
-			else {
+			} else {
 				// Going any direction
 				Nr = cv::Mat::ones(cv::Size(3, 3), CV_8U);
 				Nr.at<uchar>(cv::Point(1, 1)) = 0;
@@ -189,8 +150,7 @@ void RepeatedLineTracking(cv::InputArray _src, cv::OutputArray _dst, cv::InputAr
 					if (Ncp.x > xc) {
 						// Right direction
 						xp = Ncp.x + r;
-					}
-					else {
+					} else {
 						// Left direction
 						xp = Ncp.x - r;
 					}
@@ -199,10 +159,9 @@ void RepeatedLineTracking(cv::InputArray _src, cv::OutputArray _dst, cv::InputAr
 						src.at<double>(cv::Point(xp, yp + hW))
 						- 2 * src.at<double>(cv::Point(xp, yp))
 						+ src.at<double>(cv::Point(xp, yp - hW))
-					;
+						;
 
-				}
-				else if (Ncp.x == xc) {
+				} else if (Ncp.x == xc) {
 					// Vertical plane
 					int xp = Ncp.x;
 					int yp;
@@ -210,8 +169,7 @@ void RepeatedLineTracking(cv::InputArray _src, cv::OutputArray _dst, cv::InputAr
 					if (Ncp.y > yc) {
 						// Down direction
 						yp = Ncp.y + r;
-					}
-					else {
+					} else {
 						// Up direction
 						yp = Ncp.y - r;
 					}
@@ -220,7 +178,7 @@ void RepeatedLineTracking(cv::InputArray _src, cv::OutputArray _dst, cv::InputAr
 						src.at<double>(cv::Point(xp + hW, yp))
 						- 2 * src.at<double>(cv::Point(xp, yp))
 						+ src.at<double>(cv::Point(xp - hW, yp))
-					;
+						;
 				}
 
 				// Oblique directions
@@ -233,8 +191,7 @@ void RepeatedLineTracking(cv::InputArray _src, cv::OutputArray _dst, cv::InputAr
 						// Top right
 						xp = Ncp.x + ro;
 						yp = Ncp.y - ro;
-					}
-					else {
+					} else {
 						// Bottom left
 						xp = Ncp.x - ro;
 						yp = Ncp.y + ro;
@@ -244,9 +201,8 @@ void RepeatedLineTracking(cv::InputArray _src, cv::OutputArray _dst, cv::InputAr
 						src.at<double>(cv::Point(xp - hWo, yp - hWo))
 						- 2 * src.at<double>(cv::Point(xp, yp))
 						+ src.at<double>(cv::Point(xp + hWo, yp + hWo))
-					;
-				}
-				else {
+						;
+				} else {
 					// Diagonal, down \.
 					int xp;
 					int yp;
@@ -255,8 +211,7 @@ void RepeatedLineTracking(cv::InputArray _src, cv::OutputArray _dst, cv::InputAr
 						// Top left
 						xp = Ncp.x - ro;
 						yp = Ncp.y - ro;
-					}
-					else {
+					} else {
 						// Bottom right
 						xp = Ncp.x + ro;
 						yp = Ncp.y + ro;
@@ -266,7 +221,7 @@ void RepeatedLineTracking(cv::InputArray _src, cv::OutputArray _dst, cv::InputAr
 						src.at<double>(cv::Point(xp - hWo, yp + hWo))
 						- 2 * src.at<double>(cv::Point(xp, yp))
 						+ src.at<double>(cv::Point(xp + hWo, yp - hWo))
-					;
+						;
 
 				}
 			}             // End search of candidates
@@ -280,27 +235,6 @@ void RepeatedLineTracking(cv::InputArray _src, cv::OutputArray _dst, cv::InputAr
 			xc = Nc[index].x;
 			yc = Nc[index].y;
 			Vl = Vdepths[index];
-		}
-	}
-
-	std::vector<unsigned> nonZeroValues;
-	for (int i = 0; i < Tr.size().width; i++) {
-		for (int j = 0; j < Tr.size().height; j++) {
-			if (Tr.at<uchar>(cv::Point(i, j))) {
-				nonZeroValues.push_back(Tr.at<uchar>(cv::Point(i, j)));
-			}
-		}
-	}
-
-	std::sort(nonZeroValues.begin(), nonZeroValues.end());
-	unsigned median = nonZeroValues[nonZeroValues.size() * 0.7];
-
-	for (int i = 0; i < Tr.size().width; i++) {
-
-		for (int j = 0; j < Tr.size().height; j++) {
-			if (Tr.at<uchar>(cv::Point(i, j)) > median) {
-				//Tr.at<uchar>(cv::Point(i, j)) = 255;
-			}
 		}
 	}
 
