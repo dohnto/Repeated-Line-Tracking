@@ -26,5 +26,5 @@ target_link_libraries( ${PROJECT_NAME} ${OpenCV_LIBS} )
 
 add_subdirectory(examples)
 
-install (TARGETS ${PROJECT_NAME} DESTINATION bin)
+install (TARGETS ${PROJECT_NAME} DESTINATION lib)
 install (FILES ${RepeatedLineTracking.Headers} DESTINATION include)
